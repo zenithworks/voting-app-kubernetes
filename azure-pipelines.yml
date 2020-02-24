@@ -74,7 +74,7 @@ stages:
         preDeploy:
           steps:
           - download: current
-            artifact: drop
+            artifact: VoteResultService
           - script: echo initialize, cleanup, backup, install certs
         deploy:
           steps:

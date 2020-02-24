@@ -181,7 +181,7 @@
       },
       {
         "type": "Microsoft.Compute/virtualMachines",
-        "name": "[concat('myvm', copyIndex())]",
+        "name": "[concat('prod-vm', copyIndex())]",
         "apiVersion": "2016-04-30-preview",
         "location": "[parameters('location')]",
         "copy": {
