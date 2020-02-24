@@ -9,11 +9,24 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+  stages:
+    stage: dev
+    displayName: Dev stage
+    jobs:
+      job: deployVM
+      displayName: createOrUpdateVM    
+      steps:
+        - task: AzureResourceGroupDeployment@2
+          displayName: 'Azure Deployment:Create Or Update Resource Group action'
+          inputs:
+            azureSubscription: 'RMPM (afc11291-9826-46be-b852-70349146ddf8)'
+            action: 'Create Or Update Resource Group'
+            resourceGroupName: 'ForresterDemo'
+            location: 'East US 2'
+            templateLocation: 'Linked artifact'
+            csmFile: '$(System.DefaultWorkingDirectory)/_vmdemo/ArmTemplates/linux-vm-template.json'
+            overrideParameters: '-vmName "raivmdemo1" -adminUsername "moala" -adminPasswordOrKey "$(vmPassword)"'
+            deploymentMode: 'Incremental'
+
+      
