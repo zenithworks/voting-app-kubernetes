@@ -4,34 +4,35 @@
 # https://aka.ms/yaml
 
 trigger: 
-  - master
-  pr: none
+- master
+
+pr: none
   
   
-  pool:
-    vmImage: 'ubuntu-latest'
-  
-  variables:
-    system.debug: 'true'
-    skipComponentGovernanceDetection: 'true'
-  
-  stages:
-  - stage: build
-    jobs:
-    - job: build_result
-      displayName: Build Vote Result Service
-      pool:
-        vmImage: 'Ubuntu-latest'
-      steps:
-      - script: |          
-          cd result
-          npm install
-          npm prune --production
-      - task: PublishPipelineArtifact@1
-        inputs:
-          targetPath: '$(System.DefaultWorkingDirectory)/result'
-          artifact: 'VoteResultService'
-          publishLocation: 'pipeline'  
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  system.debug: 'true'
+  skipComponentGovernanceDetection: 'true'
+
+stages:
+- stage: build
+  jobs:
+  - job: build_result
+    displayName: Build Vote Result Service
+    pool:
+      vmImage: 'Ubuntu-latest'
+    steps:
+    - script: |          
+        cd result
+        npm install
+        npm prune --production
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(System.DefaultWorkingDirectory)/result'
+        artifact: 'VoteResultService'
+        publishLocation: 'pipeline'  
   
   # - stage: Infra
   #   dependsOn: build
@@ -57,76 +58,76 @@ trigger:
   #         deploymentMode: 'Incremental'
   
   
-  - stage: deploy
-    dependsOn: build
-    jobs:
-    - deployment: DeployVoteResultService
-      displayName: Deploy Vote Result Service
-      pool:
-        vmImage: 'Ubuntu-latest'    
-      environment:
-        name:  Production
-        resourceType: VirtualMachine
-        tags: prod 
-      strategy:
-        rolling:
-          maxParallel: 1
-          preDeploy:
+- stage: deploy
+  dependsOn: build
+  jobs:
+  - deployment: DeployVoteResultService
+    displayName: Deploy Vote Result Service
+    pool:
+      vmImage: 'Ubuntu-latest'    
+    environment:
+      name:  Production
+      resourceType: VirtualMachine
+      tags: prod 
+    strategy:
+      rolling:
+        maxParallel: 1
+        preDeploy:
+          steps:
+          - download: current
+            artifact: VoteResultService
+          - script: echo initialize, cleanup, backup, install certs
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '10.x'
+          
+        deploy:
+          steps:
+#          - script: |
+#              ps -ef | grep index.js | grep -v grep | awk '{print $2}' | xargs kill
+#              rm -rf NodePlayerService              
+#              echo COPYING APPLICATION CODE...
+#              mv /home/moala/azagent/_work/1/NodePlayerService .       
+#              cd NodePlayerService
+#              echo STARTING THE SERVICE...
+#              nohup node server.js >> logs_voteresultservice.txt &
+          - script: |     
+              cd VoteResultService
+              echo STARTING THE SERVICE...
+              node server.js >> logs_voteresultservice.txt &
+        on:
+          failure:
             steps:
-            - download: current
-              artifact: VoteResultService
-            - script: echo initialize, cleanup, backup, install certs
-            - task: NodeTool@0
-              inputs:
-                versionSpec: '10.x'
-            
-          deploy:
+            - script: echo deployment failed. Run rollback scripts...
+          success:
             steps:
-  #          - script: |
-  #              ps -ef | grep index.js | grep -v grep | awk '{print $2}' | xargs kill
-  #              rm -rf NodePlayerService              
-  #              echo COPYING APPLICATION CODE...
-  #              mv /home/moala/azagent/_work/1/NodePlayerService .       
-  #              cd NodePlayerService
-  #              echo STARTING THE SERVICE...
-  #              nohup node server.js >> logs_voteresultservice.txt &
-            - script: |     
-                cd VoteResultService
-                echo STARTING THE SERVICE...
-                node server.js >> logs_voteresultservice.txt &
-          on:
-            failure:
-              steps:
-              - script: echo deployment failed. Run rollback scripts...
-            success:
-              steps:
-              - script: echo deployment successful. Cleaning up...
-  
-  
-  
-  # - stage: dev
-  #   dependsOn: build
-  #   displayName: Dev stage
-  #   jobs:    
-  #   - job: deployVM
-  #     displayName: createOrUpdateVM    
-  #     steps:
-  #     - script: |
-  #         pwd
-  #         echo $(System.DefaultWorkingDirectory)
-  #         ls -ltrh
-  #     - task: AzureResourceGroupDeployment@2
-  #       displayName: 'Azure Deployment:Create Or Update Resource Group action'
-  #       inputs:
-  #         azureSubscription: 'RMPM (afc11291-9826-46be-b852-70349146ddf8)'
-  #         action: 'Create Or Update Resource Group'
-  #         resourceGroupName: 'ForresterDemo'
-  #         location: 'East US 2'
-  #         templateLocation: 'Linked artifact'
-  #         csmFile: '$(System.DefaultWorkingDirectory)/arm-templates/linux-vm2.json'
-  #         overrideParameters: '-vmName "raivmdemo1" -adminUsername "moala" -adminPasswordOrKey "$(vmPassword)"'
-  #         deploymentMode: 'Incremental'
-  # 
-  
+            - script: echo deployment successful. Cleaning up...
+
+
+
+# - stage: dev
+#   dependsOn: build
+#   displayName: Dev stage
+#   jobs:    
+#   - job: deployVM
+#     displayName: createOrUpdateVM    
+#     steps:
+#     - script: |
+#         pwd
+#         echo $(System.DefaultWorkingDirectory)
+#         ls -ltrh
+#     - task: AzureResourceGroupDeployment@2
+#       displayName: 'Azure Deployment:Create Or Update Resource Group action'
+#       inputs:
+#         azureSubscription: 'RMPM (afc11291-9826-46be-b852-70349146ddf8)'
+#         action: 'Create Or Update Resource Group'
+#         resourceGroupName: 'ForresterDemo'
+#         location: 'East US 2'
+#         templateLocation: 'Linked artifact'
+#         csmFile: '$(System.DefaultWorkingDirectory)/arm-templates/linux-vm2.json'
+#         overrideParameters: '-vmName "raivmdemo1" -adminUsername "moala" -adminPasswordOrKey "$(vmPassword)"'
+#         deploymentMode: 'Incremental'
+# 
+
   
         
