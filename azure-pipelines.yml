@@ -26,7 +26,7 @@ stages:
         resourceGroupName: 'ForresterDemo'
         location: 'East US 2'
         templateLocation: 'Linked artifact'
-        csmFile: '$(System.DefaultWorkingDirectory)/ArmTemplates/linux-vm-template.json'
+        csmFile: '$(System.DefaultWorkingDirectory)/**/arm-templates/linux-vm-template.json'
         overrideParameters: '-vmName "raivmdemo1" -adminUsername "moala" -adminPasswordOrKey "$(vmPassword)"'
         deploymentMode: 'Incremental'
 
