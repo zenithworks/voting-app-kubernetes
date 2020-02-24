@@ -87,7 +87,7 @@ stages:
 #              echo STARTING THE SERVICE...
 #              nohup node server.js >> logs_voteresultservice.txt &
           - script: |     
-              cd result
+              cd VoteResultService
               echo STARTING THE SERVICE...
               node server.js >> logs_voteresultservice.txt &
         on:
