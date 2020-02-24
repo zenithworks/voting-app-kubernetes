@@ -15,10 +15,13 @@ pool:
 stages:
 - stage: dev
   displayName: Dev stage
-  jobs:
+  jobs:  
   - job: deployVM
     displayName: createOrUpdateVM    
     steps:
+    - script: |
+        pwd
+        ls -ltrh
     - task: AzureResourceGroupDeployment@2
       displayName: 'Azure Deployment:Create Or Update Resource Group action'
       inputs:
