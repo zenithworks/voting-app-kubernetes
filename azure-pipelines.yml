@@ -34,7 +34,8 @@ stages:
         targetPath: '$(System.DefaultWorkingDirectory)/result'
         artifact: 'VoteResultService'
         publishLocation: 'pipeline'  
-  
+
+
 - stage: Infra
   dependsOn: build
   displayName: Create/Update Infra
@@ -64,7 +65,7 @@ stages:
         csmFile: '$(System.DefaultWorkingDirectory)/arm-templates/linux-vm2.json'
         overrideParameters: '-vmName "raivmdemo2" -adminUsername "moala" -adminPasswordOrKey "$(vmPassword)"'
         deploymentMode: 'Incremental'
-  
+
   
 - stage: deploy
   displayName: Deploy Stage
