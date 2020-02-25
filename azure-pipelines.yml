@@ -101,7 +101,7 @@ stages:
           - script: |     
               cd $(System.DefaultWorkingDirectory)/../VoteResultService
               echo STARTING THE SERVICE...
-              node server.js >> logs_voteresultservice.txt &
+              node server.js AZURE_STORAGE_ACCOUNT=$(azure-storage-username)  AZURE_STORAGE_ACCESS_KEY= $(azure-storage-key) >> logs_voteresultservice.txt &
         on:
           failure:
             steps:
