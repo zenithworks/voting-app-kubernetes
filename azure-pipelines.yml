@@ -98,6 +98,12 @@ stages:
 #              cd NodePlayerService
 #              echo STARTING THE SERVICE...
 #              nohup node server.js >> logs_voteresultservice.txt &
+          - task: AzureKeyVault@1
+            displayName: Fetch Storage Secrets from Azure Key vault
+            inputs:
+              azureSubscription: 'RMPM (afc11291-9826-46be-b852-70349146ddf8)'
+              KeyVaultName: 'ForresterDemoKeyVault'
+              SecretsFilter: '*'
           - script: |     
               cd $(System.DefaultWorkingDirectory)/../VoteResultService
               echo STARTING THE SERVICE...
