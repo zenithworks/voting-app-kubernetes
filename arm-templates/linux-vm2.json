@@ -61,9 +61,9 @@
       },
       "VmSize": {
           "type": "string",
-          "defaultValue": "Standard_B2s",
+          "defaultValue": "Standard_B1ms",
           "metadata": {
-              "description": "The size of the VM"
+              "description": "The size of the VM - Standard_B2s Standard_B1ms"
           }
       },
       "virtualNetworkName": {
