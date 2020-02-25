@@ -18,6 +18,7 @@ variables:
 
 stages:
 - stage: build
+  displayName: Build Stage
   jobs:
   - job: build_result
     displayName: Build Vote Result Service
@@ -59,6 +60,7 @@ stages:
   
   
 - stage: deploy
+  displayName: Deploy Stage
   dependsOn: build
   jobs:
   - deployment: DeployVoteResultService
@@ -76,11 +78,7 @@ stages:
           steps:
           - download: current
             artifact: VoteResultService
-          - script: echo initialize, cleanup, backup, install certs
-          - task: NodeTool@0
-            inputs:
-              versionSpec: '10.x'
-          
+          - script: echo initialize, cleanup, backup, install certs   
         deploy:
           steps:
 #          - script: |
@@ -93,6 +91,7 @@ stages:
 #              nohup node server.js >> logs_voteresultservice.txt &
           - script: |     
               pwd 
+              source ~/.profile
               cd $(System.DefaultWorkingDirectory)/../VoteResultService
               echo STARTING THE SERVICE...
               node server.js >> logs_voteresultservice.txt &
