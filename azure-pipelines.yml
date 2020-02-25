@@ -92,10 +92,8 @@ stages:
 #              echo STARTING THE SERVICE...
 #              nohup node server.js >> logs_voteresultservice.txt &
           - script: |     
-              pwd
-              ls -ltrh
-              echo $(System.DefaultWorkingDirectory)/
-              cd VoteResultService
+              pwd 
+              cd $(System.DefaultWorkingDirectory)/../VoteResultService
               echo STARTING THE SERVICE...
               node server.js >> logs_voteresultservice.txt &
         on:
