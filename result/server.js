@@ -10,13 +10,11 @@ var express = require('express'),
 
 io.set('transports', ['polling']);
 
-//var port = process.env.PORT || 4000;
-//var storage_account = process.env.AZURE_STORAGE_ACCOUNT;
-//var storage_access_key = process.env.AZURE_STORAGE_ACCESS_KEY;
+var port = process.env.PORT || 4000;
+var storage_account = process.env.AZURE_STORAGE_ACCOUNT;
+var storage_access_key = process.env.AZURE_STORAGE_ACCESS_KEY;
 
-var port = 80;
-var storage_account = account;
-var storage_access_key = key;
+
 
 io.sockets.on('connection', function (socket) {
   socket.emit('message', { text : 'Welcome!' });

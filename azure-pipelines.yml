@@ -13,6 +13,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
+  group: VoterAppSecrets
   system.debug: 'true'
   skipComponentGovernanceDetection: 'true'
 
@@ -72,7 +73,7 @@ stages:
   dependsOn: Infra
   jobs:
   - deployment: DeployVoteResultService
-    displayName: Deploy Vote Result Service
+    displayName: Depl
     pool:
       vmImage: 'Ubuntu-latest'    
     environment:
