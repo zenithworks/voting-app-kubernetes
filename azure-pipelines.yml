@@ -35,33 +35,40 @@ stages:
         artifact: 'VoteResultService'
         publishLocation: 'pipeline'  
   
-  # - stage: Infra
-  #   dependsOn: build
-  #   displayName: Create/Update Infra
-  #   jobs:    
-  #   - job: deployVM
-  #     displayName: Create Or Update VM    
-  #     steps:
-  #     - script: |
-  #         pwd
-  #         echo $(System.DefaultWorkingDirectory)
-  #         ls -ltrh
-  #     - task: AzureResourceGroupDeployment@2
-  #       displayName: 'Azure Deployment:Create Or Update Resource Group action'
-  #       inputs:
-  #         azureSubscription: 'RMPM (afc11291-9826-46be-b852-70349146ddf8)'
-  #         action: 'Create Or Update Resource Group'
-  #         resourceGroupName: 'ForresterDemo'
-  #         location: 'East US 2'
-  #         templateLocation: 'Linked artifact'
-  #         csmFile: '$(System.DefaultWorkingDirectory)/arm-templates/linux-vm2.json'
-  #         overrideParameters: '-vmName "raivmdemo1" -adminUsername "moala" -adminPasswordOrKey "$(vmPassword)"'
-  #         deploymentMode: 'Incremental'
+- stage: Infra
+  dependsOn: build
+  displayName: Create/Update Infra
+  jobs:    
+  - job: deployVM
+    displayName: Create Or Update VM    
+    steps:    
+    - task: AzureResourceGroupDeployment@2
+      displayName: 'Azure Deployment:Create Or Update Resource Group action'
+      inputs:
+        azureSubscription: 'RMPM (afc11291-9826-46be-b852-70349146ddf8)'
+        action: 'Create Or Update Resource Group'
+        resourceGroupName: 'ForresterDemo'
+        location: 'East US 2'
+        templateLocation: 'Linked artifact'
+        csmFile: '$(System.DefaultWorkingDirectory)/arm-templates/linux-vm2.json'
+        overrideParameters: '-vmName "raivmdemo1" -adminUsername "moala" -adminPasswordOrKey "$(vmPassword)"'
+        deploymentMode: 'Incremental'
+    - task: AzureResourceGroupDeployment@2
+      displayName: 'Azure Deployment:Create Or Update Resource Group action'
+      inputs:
+        azureSubscription: 'RMPM (afc11291-9826-46be-b852-70349146ddf8)'
+        action: 'Create Or Update Resource Group'
+        resourceGroupName: 'ForresterDemo'
+        location: 'East US 2'
+        templateLocation: 'Linked artifact'
+        csmFile: '$(System.DefaultWorkingDirectory)/arm-templates/linux-vm2.json'
+        overrideParameters: '-vmName "raivmdemo2" -adminUsername "moala" -adminPasswordOrKey "$(vmPassword)"'
+        deploymentMode: 'Incremental'
   
   
 - stage: deploy
   displayName: Deploy Stage
-  dependsOn: build
+  dependsOn: infra
   jobs:
   - deployment: DeployVoteResultService
     displayName: Deploy Vote Result Service
@@ -90,8 +97,6 @@ stages:
 #              echo STARTING THE SERVICE...
 #              nohup node server.js >> logs_voteresultservice.txt &
           - script: |     
-              pwd 
-              source ~/.profile
               cd $(System.DefaultWorkingDirectory)/../VoteResultService
               echo STARTING THE SERVICE...
               node server.js >> logs_voteresultservice.txt &
