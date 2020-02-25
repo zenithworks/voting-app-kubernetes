@@ -68,7 +68,7 @@ stages:
   
 - stage: deploy
   displayName: Deploy Stage
-  dependsOn: infra
+  dependsOn: Infra
   jobs:
   - deployment: DeployVoteResultService
     displayName: Deploy Vote Result Service
