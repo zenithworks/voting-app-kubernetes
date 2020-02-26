@@ -54,7 +54,7 @@ function getVotes(client) {
 }
 
 app.use(cookieParser());
-app.use(bodyParser());
+app.use(bodyParser({ extended: true }));
 app.use(methodOverride('X-HTTP-Method-Override'));
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
