@@ -108,6 +108,7 @@ stages:
               echo STARTING THE SERVICE...
               export AZURE_STORAGE_ACCOUNT=$(azure-storage-username)
               export AZURE_STORAGE_ACCESS_KEY=$(azure-storage-key)
+              export PORT=80
               #node server.js AZURE_STORAGE_ACCOUNT=$(azure-storage-username)  AZURE_STORAGE_ACCESS_KEY= $(azure-storage-key) >> logs_voteresultservice.txt &
               node server.js >> logs_voteresultservice.txt &
         on:
