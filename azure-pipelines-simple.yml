@@ -2,6 +2,8 @@
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
+# notes: Unblock inbound access port 4000 for the vm
+
 
 trigger: 
   branches:
@@ -103,7 +105,14 @@ stages:
               export PORT=4000
               #node server.js AZURE_STORAGE_ACCOUNT=$(azure-storage-username)  AZURE_STORAGE_ACCESS_KEY= $(azure-storage-key) >> logs_voteresultservice.txt &
               #nohup node server.js >> logs_voteresultservice.txt &
-              node server.js
+              #node server.js          
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                # Write your commands here
+
+                node server.js &
         on:
           failure:
             steps:
