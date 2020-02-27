@@ -1,0 +1,107 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger: 
+- master
+pr: none  
+  
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+#  group: VoterAppSecrets
+  system.debug: 'true'
+  skipComponentGovernanceDetection: 'true'
+  process.clean: 'false'
+
+stages:
+- stage: build
+  displayName: Build Stage
+  jobs:
+  - job: build_result
+    displayName: Build Vote Result Service
+    pool:
+      vmImage: 'Ubuntu-latest'
+    steps:
+    - script: |          
+        cd result
+        npm install
+        npm prune --production
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(System.DefaultWorkingDirectory)/result'
+        artifact: 'VoteResultService'
+        publishLocation: 'pipeline'  
+
+
+#- stage: Infra
+#  dependsOn: build
+#  displayName: Create/Update Infra
+#  jobs:    
+#  - job: deployVM
+#    displayName: Create Or Update VM    
+#    steps:    
+#    - task: AzureResourceGroupDeployment@2
+#      displayName: 'Azure Deployment:Create Or Update Resource Group action'
+#      inputs:
+#        azureSubscription: 'RMPM (afc11291-9826-46be-b852-70349146ddf8)'
+#        action: 'Create Or Update Resource Group'
+#        resourceGroupName: 'ForresterDemo'
+#        location: 'East US 2'
+#        templateLocation: 'Linked artifact'
+#        csmFile: '$(System.DefaultWorkingDirectory)/arm-templates/linux-vm2.json'
+#        overrideParameters: '-vmName "rai-prod-vm01" -adminUsername "moala" -adminPasswordOrKey "$(vmPassword)"'
+#        deploymentMode: 'Incremental'
+#    - task: AzureResourceGroupDeployment@2
+#      displayName: 'Azure Deployment:Create Or Update Resource Group action'
+#      inputs:
+#        azureSubscription: 'RMPM (afc11291-9826-46be-b852-70349146ddf8)'
+#        action: 'Create Or Update Resource Group'
+#        resourceGroupName: 'ForresterDemo'
+#        location: 'East US 2'
+#        templateLocation: 'Linked artifact'
+#        csmFile: '$(System.DefaultWorkingDirectory)/arm-templates/linux-vm2.json'
+#        overrideParameters: '-vmName "rai-prod-vm02" -adminUsername "moala" -adminPasswordOrKey "$(vmPassword)"'
+#        deploymentMode: 'Incremental'
+
+  
+- stage: deploy
+  displayName: Deploy Stage
+  dependsOn: Infra
+  jobs:
+  - deployment: DeployVoteResultService
+    displayName: Depl
+    pool:
+      vmImage: 'Ubuntu-latest'    
+    environment:
+      name:  Production
+      resourceType: VirtualMachine
+      tags: prod 
+    strategy:
+      rolling:
+        maxParallel: 1
+        preDeploy:
+          steps:
+          - download: current
+            artifact: VoteResultService
+          - script: echo initialize, cleanup, backup, install certs   
+        deploy:
+          steps:
+          - script: |     
+              cd $(System.DefaultWorkingDirectory)/../VoteResultService
+              ps -ef | grep server.js | grep -v grep | awk '{print $2}' | xargs kill
+              echo STARTING THE SERVICE...
+              export AZURE_STORAGE_ACCOUNT=$(azure-storage-username)
+              export AZURE_STORAGE_ACCESS_KEY=$(azure-storage-key)
+              export PORT=4000
+              #node server.js AZURE_STORAGE_ACCOUNT=$(azure-storage-username)  AZURE_STORAGE_ACCESS_KEY= $(azure-storage-key) >> logs_voteresultservice.txt &
+              nohup node server.js >> logs_voteresultservice.txt &
+        on:
+          failure:
+            steps:
+            - script: echo deployment failed. Run rollback scripts...
+          success:
+            steps:
+            - script: echo deployment successful. Cleaning up...
