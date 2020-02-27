@@ -105,6 +105,7 @@ stages:
               SecretsFilter: '*'
           - script: |     
               cd $(System.DefaultWorkingDirectory)/../VoteResultService
+              ps -ef | grep server.js | grep -v grep | awk '{print $2}' | xargs kill
               echo STARTING THE SERVICE...
               export AZURE_STORAGE_ACCOUNT=$(azure-storage-username)
               export AZURE_STORAGE_ACCESS_KEY=$(azure-storage-key)
