@@ -19,7 +19,7 @@ variables:
 #  group: VoterAppSecrets
   system.debug: 'true'
   skipComponentGovernanceDetection: 'true'
-  process.clean: 'false'
+  #process.clean: 'false'
 
 stages:
 - stage: build
