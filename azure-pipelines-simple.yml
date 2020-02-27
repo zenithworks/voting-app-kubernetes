@@ -4,7 +4,12 @@
 # https://aka.ms/yaml
 
 trigger: 
-- master
+  branches:
+    include:
+      - master
+  paths:
+    exclude:
+      - azure-pipelines.yml
 pr: none  
   
 pool:
@@ -69,7 +74,7 @@ stages:
   
 - stage: deploy
   displayName: Deploy Stage
-  dependsOn: Infra
+  dependsOn: build
   jobs:
   - deployment: DeployVoteResultService
     displayName: Depl
