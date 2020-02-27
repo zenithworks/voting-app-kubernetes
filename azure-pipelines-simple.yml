@@ -116,14 +116,12 @@ stages:
 #              targetType: 'inline'
 #              script: |
 #                node server.js &
-
           - task: Bash@3
             inputs:
               filePath: '$(System.DefaultWorkingDirectory)/../VoteResultService/deploy.sh'
             env:
               AZURE_STORAGE_ACCOUNT: $(azure-storage-username)
               AZURE_STORAGE_ACCESS_KEY: $(azure-storage-key)
-
         on:
           failure:
             steps:
