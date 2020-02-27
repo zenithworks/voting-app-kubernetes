@@ -4,7 +4,7 @@
 # https://aka.ms/yaml
 # notes: Unblock inbound access port 4000 for the vm
 # check path trigger
-#
+# color: #2196f3
 
 
 trigger: 
